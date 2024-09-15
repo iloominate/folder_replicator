@@ -1,4 +1,7 @@
 import argparse
+import os
+import os.path
+import time
 
 
 parser = argparse.ArgumentParser()
@@ -8,15 +11,26 @@ parser.add_argument("-i", "--Interval", help="Provide synchronization interval")
 parser.add_argument("-l", "--Log", help="Provide path to a log file")
 
 
-def replicate():
-    args_parsed = vars(parser.parse_args())
-    print(f"Source:{args_parsed['Source']}")
-    print(f"Replica:{args_parsed['Replica']}")
-    print(f"Interval:{args_parsed['Interval']}")
-    print(f"Log file:{args_parsed['Log']}")
+def replicate(source, replica, log):
+    if not os.path.isdir(source):
+        print("Source folder does not exist")
+        return
+
+    if not os.path.isdir(replica):
+        os.makedirs(replica)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    replicate()
 
+    # Argument parsing
+    args_parsed = vars(parser.parse_args())
+    source_dir = args_parsed['Source']
+    replica_dir = args_parsed['Replica']
+    interval = args_parsed['Interval']
+    log_path = args_parsed['Log']
+
+    log_f = open(f"{log_path}", "w")
+
+    while True:
+        replicate(source_dir, replica_dir, log_f)
+        time.sleep(interval)
