@@ -2,12 +2,14 @@ import argparse
 import os
 import os.path
 import time
+import hashlib
+import shutil
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--Source", help="Provide path to source folder")
 parser.add_argument("-r", "--Replica", help="Provide path to replica folder")
-parser.add_argument("-i", "--Interval", help="Provide synchronization interval")
+parser.add_argument("-i", "--Interval", help="Provide synchronization interval in seconds")
 parser.add_argument("-l", "--Log", help="Provide path to a log file")
 
 
@@ -23,6 +25,12 @@ def md5(file_path):
 def log_message(content):
     print(content)
     log_f.write(content + "\n")
+
+
+def copy_file(s_file_path, s_file_name):
+    shutil.copy(s_file_path, replica_dir + s_file_name)
+    log_message(f"File added: {replica_dir+s_file_name}")
+
 
 def compare_folder_content_recursive(source_path, replica_path):
 
