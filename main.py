@@ -6,13 +6,6 @@ import hashlib
 import shutil
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--Source", help="Provide path to source folder")
-parser.add_argument("-r", "--Replica", help="Provide path to replica folder")
-parser.add_argument("-i", "--Interval", help="Provide synchronization interval in seconds")
-parser.add_argument("-l", "--Log", help="Provide path to a log file")
-
-
 def md5(file_path):
     # Calculate the MD5 hash of a file.
     with open(file_path, 'rb') as f:
@@ -136,10 +129,19 @@ def replicate(source, replica):
     compare_folder_content_recursive(source, replica)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--Source", help="Provide path to source folder")
+    parser.add_argument("-r", "--Replica", help="Provide path to replica folder")
+    parser.add_argument("-i", "--Interval", help="Provide synchronization interval in seconds")
+    parser.add_argument("-l", "--Log", help="Provide path to a log file")
+    return vars(parser.parse_args())
+
+
 if __name__ == '__main__':
 
     # Argument parsing
-    args_parsed = vars(parser.parse_args())
+    args_parsed = parse_args()
     source_dir = args_parsed['Source']
     replica_dir = args_parsed['Replica']
     interval = args_parsed['Interval']
