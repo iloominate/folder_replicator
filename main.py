@@ -27,9 +27,12 @@ def log_message(content):
     log_f.write(content + "\n")
 
 
-def copy_file(s_file_path, s_file_name):
-    shutil.copy(s_file_path, replica_dir + s_file_name)
-    log_message(f"File added: {replica_dir+s_file_name}")
+def copy_file(s_file_path):
+    relative_path = os.path.relpath(s_file_path, source_dir)  # Get the relative path from source_dir
+    replica_file_path = os.path.join(str(replica_dir), str(relative_path))
+
+    shutil.copy(s_file_path, replica_file_path)
+    log_message(f"File added: {replica_file_path}")
 
 
 def copy_folder_recursive(s_dir):
@@ -43,7 +46,7 @@ def copy_folder_recursive(s_dir):
             if s_entry.is_dir():  # Recursive folder copy
                 copy_folder_recursive(s_dir)
             else:  # File copy
-                copy_file(s_entry.path, s_entry.name)
+                copy_file(s_entry.path)
 
 
 def delete_file(r_file_path):
@@ -107,7 +110,7 @@ def compare_folder_content_recursive(source_path, replica_path):
                                 delete_folder_recursive(r_entry.path)
                             break
                     if not file_found:  # File with the same name was not found in replica folder
-                        copy_file(s_entry.path, s_entry.name)
+                        copy_file(s_entry.path)
                         source_items.append(s_entry.name)
 
         # Delete files and folders that do not exist in source:
