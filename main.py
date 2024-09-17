@@ -76,48 +76,56 @@ def compare_file_content(s_file_path, r_file_path):
         log_message(f"File modified: {r_file_path}")
 
 
+def compare_folder_with_entries(s_dir, r_entries, source_items):
+    folder_found = False
+    for r_entry in r_entries:  # Look for the folder name in replica
+        if r_entry.name == s_dir.name:
+            source_items.append(s_dir.name)
+            if r_entry.is_dir():  # Folder with the same name was found
+                folder_found = True
+                compare_folder_content_recursive(s_dir.path, r_entry.path)
+            else:  # File with the same name was found
+                delete_file(r_entry.path)
+            break
+    if not folder_found:  # Folder with the same name was not found in replica folder
+        copy_folder_recursive(s_dir)
+        source_items.append(s_dir.name)
+
+
+def compare_file_with_entries(s_file, r_entries, s_entries_checked):
+    file_found = False
+    for r_entry in r_entries:
+        if r_entry.name == s_file.name:
+            file_found = True
+            s_entries_checked.append(s_file.name)
+            if r_entry.is_file():
+                compare_file_content(s_file.path, r_entry.path)
+            else:
+                delete_folder_recursive(r_entry.path)
+            break
+    if not file_found:  # File with the same name was not found in replica folder
+        copy_file(s_file.path)
+        s_entries_checked.append(s_file.name)
+
+
 def compare_folder_content_recursive(source_path, replica_path):
-    source_items = []
+    s_entries_checked = []  # All entries that exist in source directory
     with os.scandir(source_path) as s_entries:
         with os.scandir(replica_path) as r_entries:
             for s_entry in s_entries:   # Go through each source folder item
                 if s_entry.is_dir():    # Item is a folder
-                    folder_found = False
-                    for r_entry in r_entries:   # Look for the folder name in replica
-                        if r_entry.name == s_entry.name:
-                            source_items.append(s_entry.name)
-                            if r_entry.is_dir():    # Folder with the same name was found
-                                folder_found = True
-                                compare_folder_content_recursive(s_entry.path, r_entry.path)
-                            else:   # File with the same name was found
-                                delete_file(r_entry.path)
-                            break
-                    if not folder_found:    # Folder with the same name was not found in replica folder
-                        copy_folder_recursive(s_entry)
-                        source_items.append(s_entry.name)
+                    compare_folder_with_entries(s_entry, r_entries, s_entries_checked)
                 else:   # Item is a file
-                    file_found = False
-                    for r_entry in r_entries:
-                        if r_entry.name == s_entry.name:
-                            file_found = True
-                            source_items.append(s_entry.name)
-                            if r_entry.is_file():
-                                compare_file_content(s_entry.path, r_entry.path)
-                            else:
-                                delete_folder_recursive(r_entry.path)
-                            break
-                    if not file_found:  # File with the same name was not found in replica folder
-                        copy_file(s_entry.path)
-                        source_items.append(s_entry.name)
+                    compare_file_with_entries(s_entry, r_entries, s_entries_checked)
 
         # Delete files and folders that do not exist in source:
         with os.scandir(replica_path) as r_entries_updated:
             for r_entry in r_entries_updated:
-                if r_entry.name not in source_items:
-                    if r_entry.is_file():
-                        delete_file(r_entry.path)
-                    else:
+                if r_entry.name not in s_entries_checked:
+                    if r_entry.is_dir():
                         delete_folder_recursive(r_entry.path)
+                    else:
+                        delete_file(r_entry.path)
 
 
 def replicate(source, replica):
