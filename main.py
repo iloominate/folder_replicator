@@ -46,6 +46,14 @@ def copy_folder_recursive(s_dir):
                 copy_file(s_entry.path, s_entry.name)
 
 
+def delete_file(r_file_path):
+    try:
+        os.remove(r_file_path)
+        log_message(f"File deleted: {r_file_path}")
+    except OSError:
+        raise Exception(f"Couldn't delete file: {r_file_path}")
+
+
 def compare_folder_content_recursive(source_path, replica_path):
 
 
