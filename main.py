@@ -77,10 +77,8 @@ def compare_file_content(s_file_path, r_file_path):
 
 
 def compare_folder_content_recursive(source_path, replica_path):
-
-    # I need to make a dictionary that will track file names in the current folder:
     source_items = []
-    with (os.scandir(source_path) as s_entries):
+    with os.scandir(source_path) as s_entries:
         with os.scandir(replica_path) as r_entries:
             for s_entry in s_entries:   # Go through each source folder item
                 if s_entry.is_dir():    # Item is a folder
