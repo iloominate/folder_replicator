@@ -68,6 +68,14 @@ def delete_folder_recursive(r_dir):
         raise Exception(f"Couldn't delete folder: {r_dir}")
 
 
+def compare_file_content(s_file_path, r_file_path):
+    source_f_hash = md5(s_file_path)
+    replica_f_hash = md5(r_file_path)
+    if replica_f_hash != source_f_hash:
+        shutil.copy(s_file_path, r_file_path)
+        log_message(f"File modified: {r_file_path}")
+
+
 def compare_folder_content_recursive(source_path, replica_path):
 
 
