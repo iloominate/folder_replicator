@@ -12,6 +12,13 @@ parser.add_argument("-l", "--Log", help="Provide path to a log file")
 
 
 def replicate(source, replica, log):
+def md5(file_path):
+    # Calculate the MD5 hash of a file.
+    with open(file_path, 'rb') as f:
+        file_hash = hashlib.md5()
+        while chunk := f.read(8192):
+            file_hash.update(chunk)
+    return file_hash.hexdigest()
     if not os.path.isdir(source):
         print("Source folder does not exist")
         return
