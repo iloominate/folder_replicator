@@ -4,13 +4,17 @@ import os.path
 import time
 import hashlib
 import shutil
+from typing import final
 
 
-def md5(file_path):
+CHUNK_SIZE: final = 1024 * 8  # 8 KiB
+
+
+def get_file_hashsum(file_path):
     # Calculate the MD5 hash of a file.
     with open(file_path, 'rb') as f:
         file_hash = hashlib.md5()
-        while chunk := f.read(8192):
+        while chunk := f.read(CHUNK_SIZE):
             file_hash.update(chunk)
     return file_hash.hexdigest()
 
@@ -65,8 +69,8 @@ def delete_folder_recursive(r_dir):
 
 
 def compare_file_content(s_file_path, r_file_path):
-    source_f_hash = md5(s_file_path)
-    replica_f_hash = md5(r_file_path)
+    source_f_hash = get_file_hashsum(s_file_path)
+    replica_f_hash = get_file_hashsum(r_file_path)
     if replica_f_hash != source_f_hash:
         shutil.copy(s_file_path, r_file_path)
         log_message(f"File modified: {r_file_path}")
