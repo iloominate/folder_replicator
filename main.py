@@ -32,6 +32,20 @@ def copy_file(s_file_path, s_file_name):
     log_message(f"File added: {replica_dir+s_file_name}")
 
 
+def copy_folder_recursive(s_dir):
+    # Create empty folder
+    os.mkdir(replica_dir + s_dir.name)
+    log_message(f"Folder created: {replica_dir + s_dir.name}")
+
+    # Copy source folder content to new replica folder
+    with os.scandir(s_dir) as s_entries:
+        for s_entry in s_entries:
+            if s_entry.is_dir():  # Recursive folder copy
+                copy_folder_recursive(s_dir)
+            else:  # File copy
+                copy_file(s_entry.path, s_entry.name)
+
+
 def compare_folder_content_recursive(source_path, replica_path):
 
 
