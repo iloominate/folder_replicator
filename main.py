@@ -54,6 +54,20 @@ def delete_file(r_file_path):
         raise Exception(f"Couldn't delete file: {r_file_path}")
 
 
+def delete_folder_recursive(r_dir):
+    with os.scandir(r_dir) as r_entries:
+        for r_entry in r_entries:
+            if r_entry.is_dir():  # Recursive folder deletion
+                delete_folder_recursive(r_dir)
+            else:   # File deletion
+                delete_file(r_entry.path)
+    try:
+        os.remove(r_dir)
+        log_message(f"File deleted: {r_dir}")
+    except OSError:
+        raise Exception(f"Couldn't delete folder: {r_dir}")
+
+
 def compare_folder_content_recursive(source_path, replica_path):
 
 
