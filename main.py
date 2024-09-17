@@ -87,17 +87,19 @@ def compare_folder_content_recursive(source_path, replica_path):
         with os.scandir(replica_path) as r_entries:
             for s_entry in s_entries:   # Go through each source folder item
                 if s_entry.is_dir():    # Item is a folder
+                    folder_found = False
                     for r_entry in r_entries:   # Look for the folder name in replica
                         if r_entry.name == s_entry.name:
                             source_items.append(s_entry.name)
                             if r_entry.is_dir():    # Folder with the same name was found
+                                folder_found = True
                                 compare_folder_content_recursive(s_entry.path, r_entry.path)
                             else:   # File with the same name was found
                                 delete_file(r_entry.path)
                             break
-                    # Folder with the same name was not found in replica folder
-                    copy_folder_recursive(s_entry)
-                    source_items.append(s_entry.name)
+                    if not folder_found:    # Folder with the same name was not found in replica folder
+                        copy_folder_recursive(s_entry)
+                        source_items.append(s_entry.name)
                 else:   # Item is a file
                     file_found = False
                     for r_entry in r_entries:
