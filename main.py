@@ -18,6 +18,12 @@ def md5(file_path):
         while chunk := f.read(8192):
             file_hash.update(chunk)
     return file_hash.hexdigest()
+
+
+def log_message(content):
+    print(content)
+    log_f.write(content + "\n")
+
     if not os.path.isdir(source):
         print("Source folder does not exist")
         return
@@ -38,5 +44,5 @@ if __name__ == '__main__':
     log_f = open(f"{log_path}", "w")
 
     while True:
-        replicate(source_dir, replica_dir, log_f)
-        time.sleep(interval)
+        replicate(source_dir, replica_dir)
+        time.sleep(int(interval))
