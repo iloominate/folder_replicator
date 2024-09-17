@@ -11,7 +11,6 @@ parser.add_argument("-i", "--Interval", help="Provide synchronization interval")
 parser.add_argument("-l", "--Log", help="Provide path to a log file")
 
 
-def replicate(source, replica, log):
 def md5(file_path):
     # Calculate the MD5 hash of a file.
     with open(file_path, 'rb') as f:
