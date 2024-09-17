@@ -24,12 +24,18 @@ def log_message(content):
     print(content)
     log_f.write(content + "\n")
 
+def compare_folder_content_recursive(source_path, replica_path):
+
+
+def replicate(source, replica):
     if not os.path.isdir(source):
         print("Source folder does not exist")
         return
 
     if not os.path.isdir(replica):
         os.makedirs(replica)
+
+    compare_folder_content_recursive(source, replica)
 
 
 if __name__ == '__main__':
