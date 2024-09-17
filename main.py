@@ -14,7 +14,8 @@ class FolderReplicator:
         self.source_dir = source_dir
         self.replica_dir = replica_dir
         self.interval = int(interval)
-        self.log_f = open(log_path, "w")
+        self.log_path = log_path
+        self.log_f = ""
 
     def log_message(self, content: str) -> None:
         """
@@ -183,7 +184,9 @@ class FolderReplicator:
         Run the replication process in a loop with the given interval.
         """
         while True:
+            self.log_f = open(self.log_path, "a")
             self.replicate(self.source_dir, self.replica_dir)
+            self.log_f.close()
             time.sleep(int(self.interval))
 
 
