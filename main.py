@@ -33,7 +33,7 @@ class FolderReplicator:
         :param s_file_path: Path to the source file
         """
         relative_path = os.path.relpath(s_file_path, self.source_dir)
-        replica_file_path = os.path.join(str(replica_dir), str(relative_path))
+        replica_file_path = os.path.join(str(self.replica_dir), str(relative_path))
 
         shutil.copy(s_file_path, replica_file_path)
         self.log_message(f"File added: {replica_file_path}")
@@ -44,13 +44,16 @@ class FolderReplicator:
 
         :param s_dir: Directory entry of the source folder
         """
-        os.mkdir(replica_dir + s_dir.name)
-        self.log_message(f"Folder created: {replica_dir + s_dir.name}")
+        relative_path = os.path.relpath(s_dir.path, self.source_dir)
+        replica_folder_path = os.path.join(str(self.replica_dir), str(relative_path))
+
+        os.mkdir(replica_folder_path)
+        self.log_message(f"Folder created: {replica_folder_path}")
 
         with os.scandir(s_dir) as s_entries:
             for s_entry in s_entries:
                 if s_entry.is_dir():  # Recursive folder copy
-                    self.copy_folder_recursive(s_dir)
+                    self.copy_folder_recursive(s_entry)
                 else:  # File copy
                     self.copy_file(s_entry.path)
 
@@ -72,7 +75,7 @@ class FolderReplicator:
         with os.scandir(r_dir) as r_entries:
             for r_entry in r_entries:
                 if r_entry.is_dir():  # Recursive folder deletion
-                    self.delete_folder_recursive(r_dir)
+                    self.delete_folder_recursive(r_entry.path)
                 else:   # File deletion
                     self.delete_file(r_entry.path)
 
